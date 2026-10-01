@@ -23,3 +23,6 @@ npm run build
 
 ## SEO
 Są przygotowane metadata, `sitemap.xml` i `robots.txt`.
+
+
+Build verification workflow is enabled for pushes to main.
