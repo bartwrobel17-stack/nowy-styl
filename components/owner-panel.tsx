@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { ImagePlus, LogIn, Trash2, X } from "lucide-react";
 import { defaultGallery, type GalleryItem } from "@/lib/gallery-store";
 
@@ -12,10 +12,16 @@ export default function OwnerPanel({ onClose }: { onClose: () => void }) {
   const [user, setUser] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [gallery, setGallery] = useState<GalleryItem[]>(() => {
-    if (typeof window === "undefined") return defaultGallery;
-    try { return JSON.parse(localStorage.getItem("nowy-styl-gallery") || "null") || defaultGallery; } catch { return defaultGallery; }
-  });
+  const [gallery, setGallery] = useState<GalleryItem[]>(defaultGallery);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("nowy-styl-gallery");
+      if (stored) setGallery(JSON.parse(stored));
+    } catch {
+      setGallery(defaultGallery);
+    }
+  }, []);
 
   const persist = (items: GalleryItem[]) => {
     setGallery(items);
