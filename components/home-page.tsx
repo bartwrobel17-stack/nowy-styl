@@ -19,6 +19,7 @@ import {
   X
 } from "lucide-react";
 import OwnerPanel from "./owner-panel";
+import BookingWidget from "./booking-widget";
 import { defaultGallery, type GalleryItem } from "@/lib/gallery-store";
 
 const hours = [
@@ -74,6 +75,7 @@ export default function HomePage() {
           {["O salonie", "Usługi", "Galeria", "Opinie", "Kontakt"].map((item) => (
             <a key={item} href={"#" + item.toLowerCase().replace(" ", "-")} onClick={() => setMenuOpen(false)}>{item}</a>
           ))}
+          <a href="#rezerwacja" onClick={() => setMenuOpen(false)}>Rezerwacja</a>
           <a className="nav-phone" href="tel:+48506672949"><Phone size={16} /> 506 672 949</a>
         </nav>
         <button className="menu-button" onClick={() => setMenuOpen(!menuOpen)} aria-label="Otwórz menu">
@@ -128,6 +130,8 @@ export default function HomePage() {
         <div className="review-intro"><div className="section-kicker">04 / OPINIE</div><h2>Klientki i klienci<br /><em>mówią za nas.</em></h2><div className="rating"><strong>4,9</strong><span><b>★★★★★</b><small>14 opinii w Google</small></span></div></div>
         <div className="review-list">{reviews.map(([name, text], i) => <article className="review" key={name}><div className="quote">“</div><p>{text}</p><footer><strong>{name}</strong><span><Star size={12} fill="currentColor" /> Opinia Google</span></footer></article>)}</div>
       </section>
+
+      <BookingWidget />
 
       <section id="kontakt" className="contact section">
         <div className="contact-panel">
