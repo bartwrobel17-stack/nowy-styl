@@ -12,6 +12,23 @@ function getSupabase() {
   return createClient(url, key, { auth: { persistSession: false } });
 }
 
+function warsawDate(date: string, time: string) {
+  const probe = new Date(`${date}T${time}:00Z`);
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Europe/Warsaw",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(probe);
+  const get = (type: string) => parts.find((part) => part.type === type)?.value ?? "";
+  const utcGuess = Date.UTC(Number(get("year")), Number(get("month")) - 1, Number(get("day")), Number(get("hour")), Number(get("minute")));
+  const offset = utcGuess - probe.getTime();
+  return new Date(probe.getTime() - offset);
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -28,12 +45,12 @@ export async function POST(request: Request) {
     const hours = salonHours[selected.getDay() as keyof typeof salonHours];
     if (!hours) return NextResponse.json({ error: "Salon jest tego dnia zamknięty." }, { status: 400 });
 
-    const start = new Date(`${date}T${time}:00+02:00`);
+    const start = warsawDate(date, time);
+    const open = warsawDate(date, hours.open);
+    const close = warsawDate(date, hours.close);
     if (Number.isNaN(start.getTime())) return NextResponse.json({ error: "Nieprawidłowa godzina." }, { status: 400 });
 
     const end = new Date(start.getTime() + service.duration * 60_000);
-    const open = new Date(`${date}T${hours.open}:00+02:00`);
-    const close = new Date(`${date}T${hours.close}:00+02:00`);
     if (start < open || end > close) return NextResponse.json({ error: "Wybrana godzina jest poza godzinami pracy." }, { status: 400 });
 
     const supabase = getSupabase();
